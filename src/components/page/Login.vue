@@ -68,6 +68,9 @@ export default {
 					console.error(err);
 				});
 		}
+	},
+	mounted() {
+		this.$refs.ruleForm.$el[0].focus();
 	}
 }
 </script>
