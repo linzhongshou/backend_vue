@@ -4,15 +4,14 @@
         <div class="ms-login">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                 <el-form-item prop="account">
-                    <el-input v-model="ruleForm.account" placeholder="account"></el-input>
+                    <el-input v-model="ruleForm.account" placeholder="用户名"></el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+                    <el-input type="password" placeholder="密码" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
                 </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
                 </div>
-                <p style="font-size:12px;line-height:30px;color:#999;">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
@@ -40,16 +39,15 @@ export default {
 	methods: {
 		submitForm(formName) {
 			const self = this;
-			this.$axios.post('http://localhost:9090/user/validUser', qs.stringify({'account': this.ruleForm.account, 'password': this.ruleForm.password}))
+			this.$axios.post('http://localhost:39090/user/validUser', qs.stringify({'account': this.ruleForm.account, 'password': this.ruleForm.password}))
 				.then(function(result) {
-					result = result.data;
-					if(result.code == 1) {
-						window.sessionStorage.setItem('token', result.data);
+					var resultData = result.data;
+					if(resultData.code == 1) {
+						window.sessionStorage.setItem('access_token', resultData.data.accessToken);
+						window.sessionStorage.setItem('refresh_token', resultData.data.refreshToken);
 						self.$router.push({ path: '/index' }); // 登录成功之后重定向到首页
-
-						// self.setUserInfo();
 					} else {
-						alert(result.data);
+						alert(resultData.data);
 					}
 				}).catch(function(err) {
 					console.error(err);
@@ -58,7 +56,7 @@ export default {
 		},
 		setUserInfo() {
 			const self = this;
-			this.$axios.get('http://localhost:9090/api/user/userinfo', {}).then(function(result) {
+			this.$axios.get('http://localhost:39090/api/user/userinfo', {}).then(function(result) {
 				if(result.data.code == 1) {
 					self.$store.commit('setUser', JSON.stringify(result.data.data));
 				} else {

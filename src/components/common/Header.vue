@@ -23,7 +23,7 @@
         },
         mounted() {
             const self = this
-			this.$axios.get('http://localhost:9090/api/user/userinfo', {}).then(function(result) {
+			this.$axios.get('http://localhost:39090/api/user/userinfo', {}).then(function(result) {
 				if(result.data.code == 1) {
                     self.name = result.data.data.name
                     self.$store.commit('setUser', JSON.stringify(result.data.data));

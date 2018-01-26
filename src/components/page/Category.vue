@@ -6,7 +6,8 @@
                 <el-breadcrumb-item>Vue表格组件</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
-        <datasource language="en" :table-data="getData" :columns="columns" :pagination="information.pagination" :limits="false"
+        <datasource language="en" :table-data="getData" :columns="columns" :pagination="information.pagination"
+                :actions="actions"
                 v-on:change="changePage"
                 v-on:searching="onSearch"></datasource>
     </div>
@@ -18,7 +19,7 @@
         data: function(){
             const self = this;
             return {
-                url: 'http://localhost:9090/api/category/categorys',
+                url: 'http://localhost:39090/api/category/categorys',
                 information: {
                     pagination:{},
                     data:[]
@@ -84,16 +85,21 @@
         },
         beforeMount(){
             this.$axios.get(this.url).then( (res) => {
-                var pagination = {};
-                this.information.data = res.data.content;
-                this.information.pagination = pagination;
+                if ( res.data.code != 1 ) {
+                    alert(res.data.data);
+                } else {
+                    var pagination = {};
+                    let categorys = res.data.data;
+                    this.information.data = categorys.content;
+                    this.information.pagination = pagination;
 
-                pagination.total = res.data.totalElements;
-                pagination.per_page = res.data.size;
-                pagination.current_page = res.data.number + 1;
-                pagination.last_page = res.data.totalPages;
-                pagination.from = (res.data.number * res.data.size) + 1;
-                pagination.to = (res.data.number + 1) * res.data.size;
+                    pagination.total = categorys.totalElements;
+                    pagination.per_page = categorys.size;
+                    pagination.current_page = categorys.number + 1;
+                    pagination.last_page = categorys.totalPages;
+                    pagination.from = (categorys.number * categorys.size) + 1;
+                    pagination.to = (categorys.number + 1) * categorys.size;
+                }
             })
         }
     }
