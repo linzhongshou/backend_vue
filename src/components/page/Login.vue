@@ -39,7 +39,7 @@ export default {
 	methods: {
 		submitForm(formName) {
 			const self = this;
-			this.$axios.post('http://localhost:39090/user/validUser', qs.stringify({'account': this.ruleForm.account, 'password': this.ruleForm.password}))
+			this.$axios.post('http://localhost:9090/user/validUser', qs.stringify({'account': this.ruleForm.account, 'password': this.ruleForm.password}))
 				.then(function(result) {
 					var resultData = result.data;
 					if(resultData.code == 1) {
@@ -56,7 +56,7 @@ export default {
 		},
 		setUserInfo() {
 			const self = this;
-			this.$axios.get('http://localhost:39090/api/user/userinfo', {}).then(function(result) {
+			this.$axios.get('http://localhost:9090/api/user/userinfo', {}).then(function(result) {
 				if(result.data.code == 1) {
 					self.$store.commit('setUser', JSON.stringify(result.data.data));
 				} else {

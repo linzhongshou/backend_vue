@@ -1,4 +1,5 @@
 import axios from 'axios'
+import qs from 'qs'
 // import store from '@/store'
 import router from '../router'
 
@@ -11,7 +12,8 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         if (window.sessionStorage.getItem('access_token') && window.sessionStorage.getItem('refresh_token')) {  // 判断是否存在token，如果存在的话，则每个http header都加上token
-            config.headers.Authorization = 'Bearer ' + window.sessionStorage.getItem('access_token');
+            config.headers.Authorization = 'Bearer ' + window.sessionStorage.getItem('access_token') 
+                                            + ' refreshToken ' + window.sessionStorage.getItem('refresh_token');
         }
         return config;
     },
@@ -23,11 +25,17 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
     response => {
+        // eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE1MTcyMDc3NzYsInVzZXJJZCI6MSwiaWF0IjoxNTE3MjA1OTc2fQ.9j8YwNi8laDgsT3V_WsTmBxUQyFI3tR9WwDiw8_ytYimolaJVw7OlE-hTya45PGgIe8PQuWm7y_oKpCEFpUhRw
+        if (response.headers['access-token'] && response.headers['refresh-token']) {
+            window.sessionStorage.setItem('access_token', response.headers['access-token']);
+			window.sessionStorage.setItem('refresh_token', response.headers['refresh-token']);
+        }
         return response;
     },
     error => {
-        debugger;
-        if (error.response) {
+        if (error.message === 'Network Error') {
+            Message({ type: 'error', message: 'Network error !!! Try again later !!!' });
+        } else if (error.response) {
             switch (error.response.status) {
                 // 返回 401 清除token信息并跳转到登录页面
                 case 401: router.push({ path: 'login' });

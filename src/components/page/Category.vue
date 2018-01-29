@@ -15,11 +15,12 @@
 
 <script>
     import Datasource from 'vue-datasource';
+    import dateUtil from 'utils/dateUtil';
     export default {
         data: function(){
             const self = this;
             return {
-                url: 'http://localhost:39090/api/category/categorys',
+                url: 'http://localhost:9090/api/category/categorys',
                 information: {
                     pagination:{},
                     data:[]
@@ -37,14 +38,14 @@
                         name: 'CreateDate',
                         key: 'createDate',
                         render (value) {
-                            return new Date(value);
+                            return dateUtil.format('yyyy-MM-dd HH:mm', value);
                         }
                     },
                     {
                         name: 'UpdateDate',
                         key: 'updateDate',
                         render (value) {
-                            return new Date(value);
+                            return dateUtil.format('yyyy-MM-dd HH:mm', value);
                         }
                     }
                 ],
