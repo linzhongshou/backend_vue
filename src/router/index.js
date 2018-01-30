@@ -22,8 +22,14 @@ export default new Router({
                     component: resolve => require(['../components/page/Article.vue'], resolve)
                 },
                 {
+                    name: 'category',
                     path: '/category',
-                    component: resolve => require(['../components/page/Category.vue'], resolve)
+                    component: resolve => require(['../components/page/category/Category.vue'], resolve)
+                },
+                {
+                    name: 'edit_category',
+                    path: '/edit_category',
+                    component: resolve => require(['../components/page/category/CategoryForm.vue'], resolve)
                 }
             ]
         },

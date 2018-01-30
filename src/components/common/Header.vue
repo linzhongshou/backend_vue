@@ -37,7 +37,8 @@
         methods:{
             handleCommand(command) {
                 if(command == 'loginout'){
-                    window.sessionStorage.setItem("token", "");
+                    window.sessionStorage.setItem("access_token", "");
+                    window.sessionStorage.setItem("refresh_token", "");
                     this.$store.commit("setUser", "");
                     this.$router.push('/login');
                 }
