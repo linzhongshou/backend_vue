@@ -28,17 +28,14 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
-            '/api':{
-                target:'http://jsonplaceholder.typicode.com',
+            '/apis': {
+                target:'http://localhost:9090',
                 changeOrigin:true,
-                pathRewrite:{
-                    '/api':''
+                pathRewrite: {
+                    '^/apis': ''   //需要rewrite重写的,
                 }
-            },
-            '/ms':{
-                target: 'https://www.easy-mock.com/mock/592501a391470c0ac1fab128',
-                changeOrigin: true
             }
+            
         },
         // CSS Sourcemaps off by default because relative paths are "buggy"
         // with this option, according to the CSS-Loader README

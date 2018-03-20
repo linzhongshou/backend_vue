@@ -16,7 +16,7 @@
                     <el-input v-model="form.summary"></el-input>
                 </el-form-item>
                 <el-form-item label="内容">
-                    <markdown-editor v-model="form.content" :configs="configs" ref="markdownEditor"></markdown-editor>
+                    <mavonEditor v-model="form.content" ref=md @imgAdd="$imgAdd" @imgDel="$imgDel"></mavonEditor>
                 </el-form-item>
                 <el-form-item label="所属目录">
                     <el-select v-model="form.categoryId" placeholder="请选择">
@@ -58,80 +58,106 @@
 </template>
 
 <script>
-    import qs from 'qs';
-    import { markdownEditor } from 'vue-simplemde';
-    import stringUtil from 'utils/stringUtil';
+import qs from "qs";
+import { mavonEditor } from "mavon-editor";
+import stringUtil from "utils/stringUtil";
+import "mavon-editor/dist/css/index.css";
 
-    export default {
-        data: function(){
-            return {
-                form: {
-                    id: '',
-                    title: '',
-                    categoryId: '',
-                    summary: '',
-                    content: '',
-                    visible: "y",
-                    allowComment: 'y',
-                    allowThumbup: 'y',
-                    readCount: '0',
-                    commentCount: '0',
-                    thumbupCount: '0',
-                    createDate: '',
-                    updateDate: ''
-                },
-                categoryList: [],
-                configs: {
-                    status: true,
-                    initialValue: '',
-                    renderingConfig: {
-                        codeSyntaxHighlighting: true,
-                        highlightingTheme: 'atom-one-light'
-                    }
-                }
-            }
-        },
-        components: {
-            markdownEditor
-        },
-        created () {
-            this.fetchData();
-        },
-        mounted () {
-            this.editorSwitch();
-        },
-        methods: {
-            fetchData() {
-                let article = this.$route.params.article;
-                if(article) { this.form = article; }
+export default {
+  data: function() {
+    return {
+      form: {
+        id: "",
+        title: "",
+        categoryId: "",
+        summary: "",
+        content: "",
+        visible: "y",
+        allowComment: "y",
+        allowThumbup: "y",
+        readCount: "0",
+        commentCount: "0",
+        thumbupCount: "0",
+        createDate: "",
+        updateDate: ""
+      },
+      categoryList: []
+    };
+  },
+  components: {
+    mavonEditor
+  },
+  created() {
+    this.fetchData();
+  },
+  mounted() {
+    this.editorSwitch();
+  },
+  methods: {
+    fetchData() {
+      let article = this.$route.params.article;
+      if (article) {
+        this.form = article;
+      }
 
-                this.$axios.get('http://localhost:9090/api/category/all').then( (res) => {
-                    if(res.data.code == 1) {
-                        this.categoryList = res.data.data;
-                    }
-                } );
-            },
-            onSubmit() {
-                this.form.category = null;
-                stringUtil.trim(this.form);
-                this.$axios.post('http://localhost:9090/api/article', qs.stringify( this.form )).then( (res) => {
-                    if (res.data.code == 1) {
-                        this.$alert('提交成功', '提示', { callback: action => { this.prevPage(); } });
-                    } else {
-                        this.$message.error(res.data.data.join('<br/>'));
-                    }
-                } );
-                
-            },
-            prevPage() {
-                let currPage = this.$route.params.currPage;
-                this.$router.push({ name: 'article', params: { currPage: currPage } });
-            },
-            editorSwitch() {
-                let containerDiv = $("div.editor-toolbar");
-                let switchDiv = '<div style="float: right;"><select class="el-input__inner"><option>Markdown</option><option>富文本编辑器</option></select></div>';
-                $(containerDiv).append(switchDiv);
-            }
+      this.$axios.get("/apis/category/all").then(res => {
+        if (res.data.code == 1) {
+          this.categoryList = res.data.data;
         }
+      });
+    },
+    onSubmit() {
+      this.form.category = null;
+      stringUtil.trim(this.form);
+      this.$axios
+        .post("/apis/api/article", qs.stringify(this.form))
+        .then(res => {
+          if (res.data.code == 1) {
+            this.$alert("提交成功", "提示", {
+              callback: action => {
+                this.prevPage();
+              }
+            });
+          } else {
+            this.$message.error(res.data.data.join("<br/>"));
+          }
+        });
+    },
+    prevPage() {
+      let currPage = this.$route.params.currPage;
+      this.$router.push({ name: "article", params: { currPage: currPage } });
+    },
+    editorSwitch() {
+      let containerDiv = $("div.editor-toolbar");
+      let switchDiv =
+        '<div style="float: right;"><select class="el-input__inner"><option>Markdown</option><option>富文本编辑器</option></select></div>';
+      $(containerDiv).append(switchDiv);
+    },
+    $imgAdd(pos, $file) {
+      // 第一步.将图片上传到服务器.
+      var formdata = new FormData();
+      formdata.append('file', $file);
+      formdata.append('path', '/article/images');
+      this.$axios({
+          url: '/apis/api/upload',
+          method: 'post',
+          data: formdata,
+          headers: { 'Content-Type': 'multipart/form-data' },
+      }).then( (res) => {
+        if(res.data.code == 1) {
+          let fileList = res.data.data;
+          for(let index in fileList) {
+            let file = fileList[index];
+            if(file.code == 1) {
+              this.$refs.md.$img2Url(pos, "/apis" + file.data);
+            }
+          }
+        }
+      } );
+    },
+    $imgDel() {
+
     }
+  }
+};
 </script>

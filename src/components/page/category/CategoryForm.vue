@@ -47,7 +47,7 @@
             },
             onSubmit() {
                 stringUtil.trim(this.form);
-                this.$axios.post('http://localhost:9090/api/category', qs.stringify( this.form )).then( (res) => {
+                this.$axios.post('/apis/api/category', qs.stringify( this.form )).then( (res) => {
                     if (res.data.code == 1) {
                         this.$alert('提交成功', '提示', { callback: action => { this.prevPage(); } });
                     } else {

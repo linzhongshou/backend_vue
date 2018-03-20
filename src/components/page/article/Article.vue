@@ -77,7 +77,7 @@
         data: function() {
             const self = this;
             return {
-                url: 'http://localhost:9090/article/articles',
+                url: '/apis/article/articles',
                 tableData: [],
                 //当前页码
                 currPage: 1,
@@ -119,7 +119,7 @@
             handleDelete: function(index, row) {
                 this.$confirm('确定删除?', '提示', { type: 'warning' }).then( () => {
 
-                   this.$axios.delete('http://localhost:9090/api/article/'+row.id).then( (res) => {
+                   this.$axios.delete('/apis/api/article/'+row.id).then( (res) => {
                        if(res.data.code == 1) {
                            this.$alert('删除成功', '提示', { callback: action => { this.loadData(this.currPage, this.pageSize); } });
                        } else {

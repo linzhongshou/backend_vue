@@ -59,7 +59,7 @@
         data: function() {
             const self = this;
             return {
-                url: 'http://localhost:9090/api/category/categorys',
+                url: '/apis/api/category/categorys',
                 tableData: [],
                 //当前页码
                 currPage: 1,
@@ -103,9 +103,11 @@
             handleDelete: function(index, row) {
                 this.$confirm('确定删除[' + row.name + ']?', '提示', { type: 'warning' }).then( () => {
 
-                   this.$axios.delete('http://localhost:9090/api/category/'+row.id).then( (res) => {
+                   this.$axios.delete('/apis/api/category/'+row.id).then( (res) => {
                        if(res.data.code == 1) {
                            this.$alert('删除成功', '提示', { callback: action => { this.loadData(this.currPage, this.pageSize); } });
+                       } else {
+                           this.$message.error("删除错误，错误信息：" + res.data.data);
                        }
                    } ).catch( (err) => {
                        this.$message.error("删除错误，错误信息：" + err);
